@@ -34,7 +34,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG')
 
 # Define the hosts allowed to access the application (empty during development)
-ALLOWED_HOSTS = os.getenv('PRODUCTION_ALLOWED_HOSTS').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
 
 # =======================
