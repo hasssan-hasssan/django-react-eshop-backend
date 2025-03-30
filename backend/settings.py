@@ -114,7 +114,7 @@ DATABASES = {
     'default': {
         # Database backend (default: SQLite)
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',  # Path to the SQLite database file
+        'NAME': BASE_DIR / 'database/db.sqlite3',  # Path to the SQLite database file
     }
 }
 
