@@ -25,7 +25,7 @@ DEBUG = bool(os.getenv('DEBUG'))
 IS_PRODUCTION = bool(os.getenv('IS_PRODUCTION'))
 
 # Define the hosts allowed to access the application (empty during development)
-ALLOWED_HOSTS = [] if IS_PRODUCTION else os.getenv('ALLOWED_HOSTS').split(',')
+ALLOWED_HOSTS = [] if not IS_PRODUCTION else os.getenv('ALLOWED_HOSTS').split(',')
 
 
 #  -----------------------
