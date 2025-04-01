@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from base.signals import order_created
 from base.zibal import zibal_apis
 from base.models import Product, Order, OrderItem, ShippingAddress, PaymentToken, Zibal
 from base.serializers import OrderSerializer
@@ -30,7 +31,8 @@ from base.strConst import (
 
 # Define an API endpoint for creating a new order with order items
 @api_view(['POST'])  # Endpoint handles POST requests
-@permission_classes([IsAuthenticated])  # Requires user authentication to access
+# Requires user authentication to access
+@permission_classes([IsAuthenticated])
 def addOrderItems(request):
     user = request.user  # Retrieve the currently authenticated user
     data: dict = request.data  # Extract data from the request body
@@ -100,8 +102,12 @@ def addOrderItems(request):
         product.countInStock -= orderItem.qty
         product.save()  # Save the updated product object
 
+    # Notify admin new order on e-shop
+    order_created.send(sender=Order, order=order, user=user)
+
     # Serialize the order object to a JSON-compatible format
     serializer = OrderSerializer(order, many=False)
+
     # Return the serialized order data as a successful response
     return Response(serializer.data)
 

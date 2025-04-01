@@ -111,3 +111,93 @@ def PAY_RESULT_REDIRECT(token: str, db_status: bool | None = None) -> str:
     else:
         url += f'?db={db_status}'
     return url
+
+
+# Signal Constants
+HTML_TEMPLATE_NEW_USER_ALERT = """\
+<html>
+    <style>
+        h3 {{
+            font-size: 1.5rem;
+        }}
+        td {{
+            font-size: 1.1rem;
+        }}
+    </style>
+    <body style="color: #E0E0E0; font-family: 'Consolas', Arial, sans-serif; padding: 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #192841; border-radius: 8px; padding: 0.5 20 20; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);">
+            <h3 style="
+                color: #E0E0E0;
+                text-align: center;
+                margin-bottom: 15px;
+                border-bottom: 2px solid #1c2e4a;
+                text-transform:uppercase;
+                padding-bottom: 5px;">
+                User Details
+            </h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tbody>
+                    <tr>
+                        <td style="padding: 12px; color: #B0BEC5; border-bottom: 1px solid #1c2e4a;">Email</td>
+                        <td style="padding: 12px; color: #E3F2FD; border-bottom: 1px solid #1c2e4a;">%s</td>
+                    </tr>
+                    <tr style="background-color: #203354;">
+                        <td style="padding: 12px; color: #B0BEC5; border-bottom: 1px solid #1c2e4a;">Name</td>
+                        <td style="padding: 12px; color: #E3F2FD; border-bottom: 1px solid #1c2e4a;">%s</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; color: #B0BEC5;">Date Joined</td>
+                        <td style="padding: 12px; color: #E3F2FD;">%s</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>\
+"""
+
+
+def HTML_TEMPLATE_NEW_ORDER_ALERT(user, order, orderItems, itemsPrice) -> str:
+    html_content = f"""\
+    <html>
+        <body style="background-color: #152238; color: #E0E0E0; font-family: 'Roboto', Arial, sans-serif; padding: 20px;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #192841; border-radius: 8px; padding: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);">
+                <h3 style="
+                    color: #E0E0E0;
+                    text-align: center;
+                    margin-bottom: 15px;
+                    border-bottom: 2px solid #1c2e4a;
+                    padding-bottom: 15px;">
+                    Order Details
+                </h3>
+                <p style="color: #E3F2FD;">User: {user.username}</p>
+                <p style="color: #E3F2FD;">Order ID: #{order._id}</p>
+                <hr style="border: 1px solid #1c2e4a; margin: 10px 0;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #23395d;">
+                            <th style="padding: 12px; text-align: left; color: #FFFFFF; border-bottom: 2px solid #1c2e4a;">Item Name</th>
+                            <th style="padding: 12px; text-align: left; color: #FFFFFF; border-bottom: 2px solid #1c2e4a;">Quantity</th>
+                            <th style="padding: 12px; text-align: left; color: #FFFFFF; border-bottom: 2px solid #1c2e4a;">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    """
+
+    for item in orderItems:
+        html_content += f"""\
+                        <tr style="background-color: #203354;">
+                            <td style="padding: 12px; color: #B0BEC5; border-bottom: 1px solid #1c2e4a;">{item.name}</td>
+                            <td style="padding: 12px; color: #E3F2FD; border-bottom: 1px solid #1c2e4a;">{item.qty}</td>
+                            <td style="padding: 12px; color: #E3F2FD; border-bottom: 1px solid #1c2e4a;">{item.price}</td>
+                        </tr>
+        """
+    html_content += f"""\
+                    </tbody>
+                </table>
+                <hr style="border: 1px solid #1c2e4a; margin: 10px 0;">
+                <p style="color: #E3F2FD;">Total Price of Items: {itemsPrice}</p>
+            </div>
+        </body>
+    </html>\
+    """
