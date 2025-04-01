@@ -26,8 +26,7 @@ def updateUsername(sender, instance, **kwargs):
 def newUserAlert(sender, instance, created, **kwargs):
     user = instance
     if created:
-        html_content = HTML_TEMPLATE_NEW_USER_ALERT % (
-            user.email, user.first_name, user.date_joined.strftime('%d-%m-%Y %H:%M:%S'))
+        html_content = HTML_TEMPLATE_NEW_USER_ALERT(user)
         try:
             send_mail(
                 "E-SHOP | NEW USER",

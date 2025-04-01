@@ -114,47 +114,49 @@ def PAY_RESULT_REDIRECT(token: str, db_status: bool | None = None) -> str:
 
 
 # Signal Constants
-HTML_TEMPLATE_NEW_USER_ALERT = """\
-<html>
-    <style>
-        h3 {{
-            font-size: 1.5rem;
-        }}
-        td {{
-            font-size: 1.1rem;
-        }}
-    </style>
-    <body style="color: #E0E0E0; font-family: 'Consolas', Arial, sans-serif; padding: 20px;">
-        <div style="max-width: 600px; margin: 0 auto; background-color: #192841; border-radius: 8px; padding: 0.5 20 20; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);">
-            <h3 style="
-                color: #E0E0E0;
-                text-align: center;
-                margin-bottom: 15px;
-                border-bottom: 2px solid #1c2e4a;
-                text-transform:uppercase;
-                padding-bottom: 5px;">
-                User Details
-            </h3>
-            <table style="width: 100%; border-collapse: collapse;">
-                <tbody>
-                    <tr>
-                        <td style="padding: 12px; color: #B0BEC5; border-bottom: 1px solid #1c2e4a;">Email</td>
-                        <td style="padding: 12px; color: #E3F2FD; border-bottom: 1px solid #1c2e4a;">%s</td>
-                    </tr>
-                    <tr style="background-color: #203354;">
-                        <td style="padding: 12px; color: #B0BEC5; border-bottom: 1px solid #1c2e4a;">Name</td>
-                        <td style="padding: 12px; color: #E3F2FD; border-bottom: 1px solid #1c2e4a;">%s</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 12px; color: #B0BEC5;">Date Joined</td>
-                        <td style="padding: 12px; color: #E3F2FD;">%s</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </body>
-</html>\
-"""
+def HTML_TEMPLATE_NEW_USER_ALERT(user) -> str:
+    html_content = f"""
+    <html>
+        <style>
+            h3 {{
+                font-size: 1.5rem;
+            }}
+            td {{
+                font-size: 1.1rem;
+            }}
+        </style>
+        <body style="color: #E0E0E0; font-family: 'Consolas', Arial, sans-serif; padding: 20px;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #192841; border-radius: 8px; padding: 0.5 20 20; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);">
+                <h3 style="
+                    color: #E0E0E0;
+                    text-align: center;
+                    margin-bottom: 15px;
+                    border-bottom: 2px solid #1c2e4a;
+                    text-transform:uppercase;
+                    padding-bottom: 5px;">
+                    User Details
+                </h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tbody>
+                        <tr>
+                            <td style="padding: 12px; color: #B0BEC5; border-bottom: 1px solid #1c2e4a;">Email</td>
+                            <td style="padding: 12px; color: #E3F2FD; border-bottom: 1px solid #1c2e4a;">{user.email}</td>
+                        </tr>
+                        <tr style="background-color: #203354;">
+                            <td style="padding: 12px; color: #B0BEC5; border-bottom: 1px solid #1c2e4a;">Name</td>
+                            <td style="padding: 12px; color: #E3F2FD; border-bottom: 1px solid #1c2e4a;">{user.first_name}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; color: #B0BEC5;">Date Joined</td>
+                            <td style="padding: 12px; color: #E3F2FD;">{user.date_joined.strftime('%d-%m-%Y %H:%M:%S')}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </body>
+    </html>
+    """
+    return html_content
 
 
 def HTML_TEMPLATE_NEW_ORDER_ALERT(user, order, orderItems, itemsPrice) -> str:
@@ -201,3 +203,4 @@ def HTML_TEMPLATE_NEW_ORDER_ALERT(user, order, orderItems, itemsPrice) -> str:
         </body>
     </html>\
     """
+    return html_content
