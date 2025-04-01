@@ -115,27 +115,29 @@ def PAY_RESULT_REDIRECT(token: str, db_status: bool | None = None) -> str:
 
 # Signal Constants
 def HTML_TEMPLATE_NEW_USER_ALERT(user) -> str:
-    html_content = f"""
+    html_content = """
     <html>
         <style>
-            h3 {{
+            h3 {
                 font-size: 1.5rem;
-            }}
-            td {{
+            }
+
+            td {
+                    
                 font-size: 1.1rem;
-            }}
+            }
         </style>
-        <body style="color: #E0E0E0; font-family: 'Consolas', Arial, sans-serif; padding: 20px;">
-            <div style="max-width: 600px; margin: 0 auto; background-color: #192841; border-radius: 8px; padding: 0.5 20 20; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);">
-                <h3 style="
-                    color: #E0E0E0;
-                    text-align: center;
-                    margin-bottom: 15px;
-                    border-bottom: 2px solid #1c2e4a;
-                    text-transform:uppercase;
-                    padding-bottom: 5px;">
-                    User Details
-                </h3>
+    """
+    html_content += f"""
+        <body style="background-color: #152238; color: #E0E0E0; font-family: 'Consolas'; padding: 20px;">
+                <div style="max-width: 600px; margin: 0 auto; background-color: #192841; border-radius: 8px; padding:10px 30px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);">
+                    <h2 style="
+                        padding-bottom:30px;
+                        color: #E0E0E0;
+                        text-align: center;
+                        border-bottom: 2px solid #1c2e4a;">
+                        User Details
+                    </h2>
                 <table style="width: 100%; border-collapse: collapse;">
                     <tbody>
                         <tr>
@@ -154,7 +156,7 @@ def HTML_TEMPLATE_NEW_USER_ALERT(user) -> str:
                 </table>
             </div>
         </body>
-    </html>
+    </html>\
     """
     return html_content
 
@@ -162,16 +164,15 @@ def HTML_TEMPLATE_NEW_USER_ALERT(user) -> str:
 def HTML_TEMPLATE_NEW_ORDER_ALERT(user, order, orderItems, itemsPrice) -> str:
     html_content = f"""\
     <html>
-        <body style="background-color: #152238; color: #E0E0E0; font-family: 'Roboto', Arial, sans-serif; padding: 20px;">
-            <div style="max-width: 600px; margin: 0 auto; background-color: #192841; border-radius: 8px; padding: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);">
-                <h3 style="
-                    color: #E0E0E0;
-                    text-align: center;
-                    margin-bottom: 15px;
-                    border-bottom: 2px solid #1c2e4a;
-                    padding-bottom: 15px;">
-                    Order Details
-                </h3>
+    <body style="background-color: #152238; color: #E0E0E0; font-family: 'Consolas'; padding: 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #192841; border-radius: 8px; padding:10px 30px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);">
+            <h2 style="
+                padding-bottom:30px;
+                color: #E0E0E0;
+                text-align: center;
+                border-bottom: 2px solid #1c2e4a;">
+                Order Details
+            </h2>
                 <p style="color: #E3F2FD;">User: {user.username}</p>
                 <p style="color: #E3F2FD;">Order ID: #{order._id}</p>
                 <hr style="border: 1px solid #1c2e4a; margin: 10px 0;">
