@@ -1,3 +1,4 @@
+import logging
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
@@ -67,6 +68,7 @@ def registerUser(request):
         else:
             return Response({DETAIL: ERROR_ON_SENDING_EMAIL}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     except Exception as e:
+        logging.error(e)
         # Handle cases where the user already exists but is not active
         user = User.objects.get(username=username)
         if user and not user.is_active:
