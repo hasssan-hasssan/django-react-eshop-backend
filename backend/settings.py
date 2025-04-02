@@ -19,14 +19,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # DEBUG mode should be False in production to avoid exposing sensitive details
-DEBUG = bool(os.getenv('DEBUG'))
+DEBUG = os.getenv('DEBUG') == 'True'
 
 # PRODUCTTION mode
-IS_PRODUCTION = bool(os.getenv('IS_PRODUCTION'))
+IS_PRODUCTION = os.getenv('IS_PRODUCTION') == 'True'
+
 
 # Define the hosts allowed to access the application (empty during development)
 ALLOWED_HOSTS = [] if not IS_PRODUCTION else os.getenv('ALLOWED_HOSTS').split(',')
-
 
 #  -----------------------
 # | Installed Application |
@@ -258,8 +258,13 @@ FRONTEND_DOMAIN = os.getenv('FRONTEND_DOMAIN')
 # | Email Configuration |
 #  ---------------------
 
-# Use SMTP for sending emails
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+if IS_PRODUCTION:
+    # Use SMTP for sending emails
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+else:
+    # Use Console to simulate sending emails
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    
 EMAIL_HOST = 'smtp.gmail.com'  # SMTP host
 EMAIL_PORT = 587  # SMTP port
 EMAIL_USE_TLS = True  # Enable TLS for email security

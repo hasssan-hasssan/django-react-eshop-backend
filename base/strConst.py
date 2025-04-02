@@ -205,3 +205,7 @@ def HTML_TEMPLATE_NEW_ORDER_ALERT(user, order, orderItems, itemsPrice) -> str:
     </html>\
     """
     return html_content
+
+
+
+ERROR_UNEXPECTED = "Unexpected error occurred."

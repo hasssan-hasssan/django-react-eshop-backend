@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 import logging
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -14,7 +15,8 @@ from base.strConst import (
     SUCCESS_NEW_REGISTER,
     ERROR_ON_SENDING_EMAIL,
     ERROR_USER_EXISTS_IS_NOT_ACTIVE,
-    ERROR_USER_EXISTS_IS_ACTIVE_TOO
+    ERROR_USER_EXISTS_IS_ACTIVE_TOO,
+    ERROR_UNEXPECTED
 )
 from base import utils
 import jwt
@@ -41,50 +43,67 @@ def getUsers(request):
     return Response(serializer.data)
 
 
-# Define an API endpoint to register a new user
-@api_view(['POST'])  # Endpoint supports POST requests
+@api_view(['POST'])  # Specifies that this view only handles POST requests
 def registerUser(request):
-    data = request.data  # Extract user registration data from the request body
-    username = data['email']  # Get the user's email as the username
-    password = data['password']  # Get the user's password
+    # Extract user registration data from the request body
+    data = request.data
+    username = data['email']  # Email is used as the username
+    password = data['password']  # Password provided by the user
 
     try:
-        # Create a new user with the provided data
+        # Attempt to create a new user with the provided data
         user = User.objects.create(
-            first_name=data['name'],
-            username=data['email'],
-            email=data['email'],
-            password=make_password(data['password']),  # Hash the password
+            first_name=data['name'],  # First name of the user
+            username=data['email'],  # Username is set to the email
+            email=data['email'],  # Email address
+            # Hash the password for security
+            password=make_password(data['password']),
             is_active=False  # Set the user as inactive until email verification
         )
 
-        # Send an activation email
-        activationLink: str = utils.createActivationLink(
-            user)  # Generate the activation link
-        email: dict = utils.createEmail(
-            NEW_REGISTER, activationLink, user)  # Create the email content
-        if utils.sendEmail(email):  # Send the activation email
+        # Generate an activation link for email verification
+        activationLink = utils.createActivationLink(user)
+        # Create the email content using the activation link
+        email = utils.createEmail(NEW_REGISTER, activationLink, user)
+
+        # Attempt to send the activation email
+        if utils.sendEmail(email):
+            # If email is successfully sent, return a success response
             return Response({DETAIL: SUCCESS_NEW_REGISTER}, status=status.HTTP_201_CREATED)
         else:
+            # If email sending fails, return an internal server error
             return Response({DETAIL: ERROR_ON_SENDING_EMAIL}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    except Exception as e:
-        logging.error(e)
-        # Handle cases where the user already exists but is not active
-        user = User.objects.get(username=username)
+
+    except IntegrityError:
+        # IntegrityError is triggered when a user with the same email already exists
+        # Safely fetch the user (returns None if not found)
+        user = User.objects.filter(username=username).first()
+
         if user and not user.is_active:
-            # Update the user's password and resend the activation email
+            # If the user exists but is inactive, update their password
+            # Hash and set the new password
             user.password = make_password(password)
-            user.save()
-            activationLink: str = utils.createActivationLink(user)
-            email: dict = utils.createEmail(
-                IS_NOT_ACTIVE, activationLink, user)
+            user.save()  # Save the user object to the database
+
+            # Generate a new activation link and email content
+            activationLink = utils.createActivationLink(user)
+            email = utils.createEmail(IS_NOT_ACTIVE, activationLink, user)
+
+            # Attempt to resend the activation email
             if utils.sendEmail(email):
-                return Response({DETAIL: ERROR_USER_EXISTS_IS_NOT_ACTIVE}, status=status.HTTP_400_BAD_REQUEST)
+                # If email is successfully sent, return a response indicating the user exists but is not active
+                return Response({DETAIL: ERROR_USER_EXISTS_IS_NOT_ACTIVE}, status=status.HTTP_200_OK)
             else:
+                # If email sending fails, return an internal server error
                 return Response({DETAIL: ERROR_ON_SENDING_EMAIL}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         elif user and user.is_active:
-            # Handle cases where the user is already active
-            return Response({DETAIL: ERROR_USER_EXISTS_IS_ACTIVE_TOO}, status=status.HTTP_400_BAD_REQUEST)
+            # If the user exists and is already active, notify the client
+            return Response({DETAIL: ERROR_USER_EXISTS_IS_ACTIVE_TOO}, status=status.HTTP_200_OK)
+
+        else:
+            # If no user is found or some unexpected error occurs, return a generic error response
+            return Response({DETAIL: ERROR_UNEXPECTED}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # Define an API endpoint to update the profile of the authenticated user
@@ -118,7 +137,7 @@ def verifyEmail(request, token):
             key=settings.SECRET_KEY,
             algorithms=[settings.SIMPLE_JWT['ALGORITHM']]
         )
-    except Exception as e:
+    except:
         # Redirect to the frontend login page with an invalid token message if decoding fails
         return HttpResponseRedirect(f'{settings.FRONTEND_DOMAIN}/login?token=invalid')
     else:
