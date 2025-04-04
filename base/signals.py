@@ -1,11 +1,13 @@
 import logging
-from django.db.models.signals import pre_save, post_save
+import os
+from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import Signal
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.core.mail import send_mail
 from django.conf import settings
 from base.strConst import HTML_TEMPLATE_NEW_USER_ALERT, HTML_TEMPLATE_NEW_ORDER_ALERT
+from base.models import Product
 
 
 # pre_save is triggered before a model's save() method is called
@@ -64,3 +66,12 @@ def newOrderAlert(sender, **kwargs):
         logging.error(f"Error sending email: {e}")
 
 
+@receiver(post_delete, sender=Product)
+def delete_product_image(sender, instance, **kwargs):
+    # Check if the instance has an image file
+    if instance.image:
+        image_path = instance.image.path  # Get the image file path
+        # Check if the file exists and delete it
+        if os.path.exists(image_path):
+            os.remove(image_path)
+            print('Deleted image file.')
