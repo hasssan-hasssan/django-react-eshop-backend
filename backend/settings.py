@@ -163,14 +163,14 @@ USE_TZ = True  # Enables timezone-aware datetimes
 #  ------------------------
 
 STATIC_URL = '/static/'  # URL refix for serving static files
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'public', 'static')
 STATICFILES_DIRS = [
     # BASE_DIR / 'static/images',  # Additional directory for static files
 ]
 
 MEDIA_URL = '/images/'  # URL prefix for serving media files
 # Filesystem path for storing media files
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'public', 'media')
 
 
 #  --------------------------------
